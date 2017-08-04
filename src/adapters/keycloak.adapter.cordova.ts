@@ -27,9 +27,9 @@ export class CordovaAdapter {
     static openBrowserTab(url: String, options: any) {
         let cordova = window.cordova;
         if (options.toolbarColor) {
-            cordova.plugins.browsertab.themeable.openUrl(url, options);
+            cordova.plugins.browsertab.openUrl(url, options);
         } else {
-            cordova.plugins.browsertab.themeable.openUrl(url);
+            cordova.plugins.browsertab.openUrl(url);
         };
     }
 
@@ -55,7 +55,7 @@ export class CordovaAdapter {
         //let ref = window.cordova.InAppBrowser.open(loginUrl, '_system', o);
         let completed = false;
 
-        window.cordova.plugins.browsertab.themeable.isAvailable(
+        window.cordova.plugins.browsertab.isAvailable(
             function (result: any) {
                 if (!result) {
                     ref = window.cordova.InAppBrowser.open(loginUrl, '_system');
@@ -93,7 +93,7 @@ export class CordovaAdapter {
 
     public closeBrowserTab() {
         let cordova = window.cordova;
-        cordova.plugins.browsertab.themeable.close();
+        cordova.plugins.browsertab.close();
         //completed = true;
     }
 
@@ -103,7 +103,7 @@ export class CordovaAdapter {
         let ref: any;
         let error: any;
 
-        cordova.plugins.browsertab.themeable.isAvailable(
+        cordova.plugins.browsertab.isAvailable(
             function (result: any) {
                 if (!result) {
                     ref = cordova.InAppBrowser.open(logoutUrl, '_system');
@@ -142,7 +142,7 @@ export class CordovaAdapter {
 
     public register(options: any) {
         let registerUrl = Keycloak.createRegisterUrl({});
-        window.cordova.plugins.browsertab.themeable.isAvailable(
+        window.cordova.plugins.browsertab.isAvailable(
             function (result: any) {
                 if (!result) {
                     window.cordova.InAppBrowser.open(registerUrl, '_system');
@@ -158,7 +158,7 @@ export class CordovaAdapter {
 
     public accountManagement(options: any) {
         let accountUrl = Keycloak.createAccountUrl({});
-        window.cordova.plugins.browsertab.themeable.isAvailable(
+        window.cordova.plugins.browsertab.isAvailable(
             function (result: any) {
                 if (!result) {
                     window.cordova.InAppBrowser.open(accountUrl, '_system');
