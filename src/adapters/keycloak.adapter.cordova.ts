@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Keycloak } from '../services/keycloak.core.service';
+import {Keycloak} from '../services/keycloak.core.service';
 
 declare var window: any;
 
@@ -30,7 +30,8 @@ export class CordovaAdapter {
             cordova.plugins.browsertab.openUrl(url, options);
         } else {
             cordova.plugins.browsertab.openUrl(url);
-        };
+        }
+        ;
     }
 
     public login(options: any) {
@@ -55,40 +56,32 @@ export class CordovaAdapter {
         //let ref = window.cordova.InAppBrowser.open(loginUrl, '_system', o);
         let completed = false;
 
-        window.cordova.plugins.browsertab.isAvailable(
-            function (result: any) {
-                if (!result) {
-                    ref = window.cordova.InAppBrowser.open(loginUrl, '_system');
-                    ref.addEventListener('loadstart', function (event: any) {
-                        if (event.url.indexOf('http://localhost') === 0) {
-                            let callback = Keycloak.parseCallback(event.url);
-                            Keycloak.processCallback(callback);
-                            ref.close();
-                            completed = true;
-                        }
-                    });
 
-                    ref.addEventListener('loaderror', function (event: any) {
-                        if (!completed) {
-                            if (event.url.indexOf('http://localhost') === 0) {
-
-                                let callback = Keycloak.parseCallback(event.url);
-                                Keycloak.processCallback(callback);
-                                ref.close();
-                                completed = true;
-                            } else {
-                                ref.close();
-                            }
-                        }
-                    });
-                } else {
-                    CordovaAdapter.openBrowserTab(loginUrl, options);
-                }
-            },
-            function (isAvailableError: any) {
-                console.info('failed to query availability of in-app browser tab');
+        ref = window.cordova.InAppBrowser.open(loginUrl, '_system');
+        ref.addEventListener('loadstart', function (event: any) {
+            if (event.url.indexOf('http://localhost') === 0) {
+                let callback = Keycloak.parseCallback(event.url);
+                Keycloak.processCallback(callback);
+                ref.close();
+                completed = true;
             }
-        );
+        });
+
+        ref.addEventListener('loaderror', function (event: any) {
+            if (!completed) {
+                if (event.url.indexOf('http://localhost') === 0) {
+
+                    let callback = Keycloak.parseCallback(event.url);
+                    Keycloak.processCallback(callback);
+                    ref.close();
+                    completed = true;
+                } else {
+                    ref.close();
+                }
+            }
+        });
+
+
     }
 
     public closeBrowserTab() {
