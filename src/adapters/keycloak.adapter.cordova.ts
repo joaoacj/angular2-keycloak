@@ -24,15 +24,6 @@ declare var window: any;
  */
 export class CordovaAdapter {
 
-    static openBrowserTab(url: String, options: any) {
-        let cordova = window.cordova;
-        if (options.toolbarColor) {
-            cordova.plugins.browsertab.openUrl(url, options);
-        } else {
-            cordova.plugins.browsertab.openUrl(url);
-        }
-        ;
-    }
 
     public login(options: any) {
         //let promise = Keycloak.createPromise();
@@ -47,8 +38,8 @@ export class CordovaAdapter {
             throw new Error('Cannot authenticate via a web browser');
         }
 
-        if (!window.cordova.InAppBrowser || !window.cordova.plugins.browsertab) {
-            throw new Error('The Apache Cordova InAppBrowser/BrowserTab plugins was not found and are required');
+        if (!window.cordova.InAppBrowser) {
+            throw new Error('The Apache Cordova InAppBrowser plugins was not found and are required');
         }
 
         let ref: any;
@@ -84,11 +75,6 @@ export class CordovaAdapter {
 
     }
 
-    public closeBrowserTab() {
-        let cordova = window.cordova;
-        cordova.plugins.browsertab.close();
-        //completed = true;
-    }
 
     public logout(options: any) {
         let cordova = window.cordova;
@@ -96,73 +82,46 @@ export class CordovaAdapter {
         let ref: any;
         let error: any;
 
-        cordova.plugins.browsertab.isAvailable(
-            function (result: any) {
-                if (!result) {
-                    ref = cordova.InAppBrowser.open(logoutUrl, '_system');
-                    ref.addEventListener('loadstart', function (event: any) {
-                        if (event.url.indexOf('http://localhost') === 0) {
-                            this.ref.close();
-                        }
-                    });
 
-                    ref.addEventListener('loaderror', function (event: any) {
-                        if (event.url.indexOf('http://localhost') === 0) {
-                            this.ref.close();
-                        } else {
-                            error = true;
-                            this.ref.close();
-                        }
-                    });
-
-                    ref.addEventListener('exit', function (event: any) {
-                        if (error) {
-                            //promise.setError();
-                        } else {
-                            Keycloak.clearToken({});
-                            //promise.setSuccess();
-                        }
-                    });
-                } else {
-                    CordovaAdapter.openBrowserTab(logoutUrl, options);
-                }
-            },
-            function (isAvailableError: any) {
-                console.info('failed to query availability of in-app browser tab');
+        ref = cordova.InAppBrowser.open(logoutUrl, '_system');
+        ref.addEventListener('loadstart', function (event: any) {
+            if (event.url.indexOf('http://localhost') === 0) {
+                this.ref.close();
             }
-        );
+        });
+
+        ref.addEventListener('loaderror', function (event: any) {
+            if (event.url.indexOf('http://localhost') === 0) {
+                this.ref.close();
+            } else {
+                error = true;
+                this.ref.close();
+            }
+        });
+
+        ref.addEventListener('exit', function (event: any) {
+            if (error) {
+                //promise.setError();
+            } else {
+                Keycloak.clearToken({});
+                //promise.setSuccess();
+            }
+        });
+
     }
 
     public register(options: any) {
         let registerUrl = Keycloak.createRegisterUrl({});
-        window.cordova.plugins.browsertab.isAvailable(
-            function (result: any) {
-                if (!result) {
-                    window.cordova.InAppBrowser.open(registerUrl, '_system');
-                } else {
-                    CordovaAdapter.openBrowserTab(registerUrl, options);
-                }
-            },
-            function (isAvailableError: any) {
-                console.info('failed to query availability of in-app browser tab');
-            }
-        );
+
+        window.cordova.InAppBrowser.open(registerUrl, '_system');
+
     }
 
     public accountManagement(options: any) {
         let accountUrl = Keycloak.createAccountUrl({});
-        window.cordova.plugins.browsertab.isAvailable(
-            function (result: any) {
-                if (!result) {
-                    window.cordova.InAppBrowser.open(accountUrl, '_system');
-                } else {
-                    CordovaAdapter.openBrowserTab(accountUrl, options);
-                }
-            },
-            function (isAvailableError: any) {
-                console.info('failed to query availability of in-app browser tab');
-            }
-        );
+
+        window.cordova.InAppBrowser.open(accountUrl, '_system');
+
     }
 
     public redirectUri(options: any): any {
